@@ -1,0 +1,19 @@
+# Maven
+target/
+
+# IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code workspace data
+.claude/
