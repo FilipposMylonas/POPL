@@ -18,12 +18,12 @@ public final class GameLogic {
      * Ace = 1, face cards (J/Q/K) = 10, everything else = its face number.
      * Ace flexibility (counting as 11) is NOT applied here; it is handled at
      * the Hand level by {@link #handValue(Hand)}.
+     * Examples: see tests.
      */
     public static int cardValue(Card card) {
-        // Template: switch on rank.
-        //   1          -> Ace (base value 1)
-        //   11, 12, 13 -> Jack/Queen/King (10)
-        //   default    -> numeric pip value
+        // Template for Card:
+        //   ... card.suit() ... card.rank() ...
+        // (rank is int [1..13]; branch on the special values 1 and 11/12/13)
         return switch (card.rank()) {
             case 1 -> 1;
             case 11, 12, 13 -> 10;
@@ -37,12 +37,12 @@ public final class GameLogic {
      * Aces worth 1, then promotes each Ace from 1 to 11 as long as doing so
      * keeps the total at or below 21. The returned value may exceed 21 if the
      * hand has already busted.
+     * Examples: see tests.
      */
     public static int handValue(Hand hand) {
-        // Template: fold over cards (base total), then apply Ace-promotion rule.
-        //   base  = sum of cardValue(c) for every c in hand
-        //   aces  = count of Aces in hand
-        //   value = base, then for each Ace: if +10 still <= 21, promote it.
+        // Template for Hand:
+        //   ... hand.cards() ...
+        // (cards is a List<Card>; process each element with cardValue)
         int base = hand.cards().stream().mapToInt(GameLogic::cardValue).sum();
         long aces = hand.cards().stream().filter(c -> c.rank() == 1).count();
 
@@ -58,9 +58,11 @@ public final class GameLogic {
     /**
      * Hand -> boolean
      * Returns true if the hand's value exceeds 21 (a bust).
+     * Examples: see tests.
      */
     public static boolean isBust(Hand hand) {
-        // Template: compute handValue, compare against the bust threshold (21).
+        // Template for Hand:
+        //   ... hand.cards() ...
         return handValue(hand) > 21;
     }
 
@@ -68,9 +70,11 @@ public final class GameLogic {
      * Hand, Card -> Hand
      * Returns a new Hand containing every card of the input Hand plus the
      * given Card appended at the end. The input Hand is NOT modified.
+     * Examples: see tests.
      */
     public static Hand addCardToHand(Hand hand, Card card) {
-        // Template: concatenate (old cards) ++ (new card), freeze as immutable.
+        // Template for (Hand, Card):
+        //   ... hand.cards() ... card.suit() ... card.rank() ...
         List<Card> newCards = Stream.concat(
                 hand.cards().stream(),
                 Stream.of(card)
@@ -84,11 +88,12 @@ public final class GameLogic {
      * been dealt to the player (toPlayer=true) or the dealer (toPlayer=false).
      * The input GameState is NOT modified.
      * Precondition: the remaining deck is non-empty.
+     * Examples: see tests.
      */
     public static GameState dealCard(GameState state, boolean toPlayer) {
-        // Template: split deck into (top, rest); produce new GameState
-        //   if toPlayer -> add top to playerHand, keep dealerHand
-        //   else        -> add top to dealerHand, keep playerHand
+        // Template for (GameState, boolean):
+        //   ... state.playerHand() ... state.dealerHand() ... state.remainingDeck() ...
+        //   if (toPlayer) { ... } else { ... }
         List<Card> deckCards = state.remainingDeck().cards();
         Card top = deckCards.get(0);
         Deck newDeck = new Deck(deckCards.subList(1, deckCards.size()));
@@ -111,9 +116,12 @@ public final class GameLogic {
      *   - player busts  -> DealerWins
      *   - dealer busts  -> PlayerWins (and player did not bust)
      *   - higher total wins; equal totals -> Push.
+     * Examples: see tests.
      */
     public static GameOutcome determineOutcome(Hand playerHand, Hand dealerHand) {
-        // Template: check busts first (they override raw totals), then compare.
+        // Template for (Hand, Hand):
+        //   ... playerHand.cards() ... dealerHand.cards() ...
+        // (the result is a GameOutcome, one of PlayerWins | DealerWins | Push)
         if (isBust(playerHand)) return new GameOutcome.DealerWins();
         if (isBust(dealerHand)) return new GameOutcome.PlayerWins();
 
@@ -128,10 +136,11 @@ public final class GameLogic {
      * Hand -> boolean
      * Returns true iff the dealer must draw another card under the standard
      * casino rule: the dealer hits on any total below 17 and stands otherwise.
+     * Examples: see tests.
      */
     public static boolean dealerShouldHit(Hand dealerHand) {
-        // Template: compute handValue, compare against the dealer-stand
-        // threshold (17): hit iff strictly below it.
+        // Template for Hand:
+        //   ... dealerHand.cards() ...
         return handValue(dealerHand) < 17;
     }
 
@@ -141,9 +150,11 @@ public final class GameLogic {
      * player and two to the dealer, taken from the top of the given deck in
      * the standard alternating order (player, dealer, player, dealer).
      * Precondition: the deck has at least 4 cards.
+     * Examples: see tests.
      */
     public static GameState initialDeal(Deck deck) {
-        // Template: start from empty hands + full deck, then thread 4 deals.
+        // Template for Deck:
+        //   ... deck.cards() ...
         GameState s = new GameState(Hand.EMPTY, Hand.EMPTY, deck);
         s = dealCard(s, true);
         s = dealCard(s, false);
