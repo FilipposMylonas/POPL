@@ -13,13 +13,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-// Main is the Imperative Shell.
-// This is the ONLY file in the project permitted to:
-//   - read from System.in (via Scanner)
+// Main is the imperative shell.
+// the only file allowed to:
+//   - read from System.in (Scanner)
 //   - write to System.out
 //   - use randomness (Collections.shuffle)
-//   - use mutable collections (ArrayList, as a short-lived local builder)
-// It drives the game loop by calling pure functions on GameLogic.
+//   - use mutable collections (ArrayList as a short-lived local builder)
+// drives the game loop by calling pure functions on GameLogic.
 public final class Main {
 
     public static void main(String[] args) {
@@ -42,17 +42,17 @@ public final class Main {
         System.out.println("Thanks for playing!");
     }
 
-    // Returns a freshly shuffled full deck.
-    // Allowed here (and nowhere else) to use ArrayList + Collections.shuffle.
+    // a freshly shuffled full deck.
+    // ArrayList + Collections.shuffle are allowed here and nowhere else.
     private static Deck shuffledDeck() {
         List<Card> mutable = new ArrayList<>(Deck.fullDeck().cards());
         Collections.shuffle(mutable);
         return new Deck(mutable);
     }
 
-    // Runs one round: shows the opening hands, runs the player's turn, then
-    // (if the player did not bust) runs the dealer's turn. Returns the
-    // final GameState so Main can compute the outcome.
+    // runs one round: shows the opening hands, the player's turn, then
+    // (if the player didnt bust) the dealer's turn. returns the final
+    // state so main can compute the outcome.
     private static GameState playRound(GameState initial, Scanner scanner) {
         System.out.println();
         System.out.println("Dealer shows: " + describeCard(initial.dealerHand().cards().get(0)));
