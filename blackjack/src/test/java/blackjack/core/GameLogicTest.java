@@ -135,6 +135,51 @@ class GameLogicTest {
         assertFalse(GameLogic.dealerShouldHit(d));
     }
 
+    @Test
+    void dealerShouldHit_falseAbove17() {
+        Hand d = new Hand(List.of(Card.EXAMPLE_KING, new Card(Suit.HEARTS, 8))); // 18
+        assertFalse(GameLogic.dealerShouldHit(d));
+    }
+
+    // ----- dealCard -----
+
+    @Test
+    void dealCard_toPlayerMovesTopCardToPlayerHand() {
+        // Deck of [5, K]; empty hands. Dealing to player puts the 5 in the
+        // player's hand, leaves the K in the deck, dealer untouched.
+        Deck d = new Deck(List.of(Card.EXAMPLE_FIVE, Card.EXAMPLE_KING));
+        GameState before = new GameState(Hand.EMPTY, Hand.EMPTY, d);
+
+        GameState after = GameLogic.dealCard(before, true);
+
+        assertEquals(List.of(Card.EXAMPLE_FIVE), after.playerHand().cards());
+        assertEquals(List.of(), after.dealerHand().cards());
+        assertEquals(List.of(Card.EXAMPLE_KING), after.remainingDeck().cards());
+    }
+
+    @Test
+    void dealCard_toDealerMovesTopCardToDealerHand() {
+        Deck d = new Deck(List.of(Card.EXAMPLE_FIVE, Card.EXAMPLE_KING));
+        GameState before = new GameState(Hand.EMPTY, Hand.EMPTY, d);
+
+        GameState after = GameLogic.dealCard(before, false);
+
+        assertEquals(List.of(), after.playerHand().cards());
+        assertEquals(List.of(Card.EXAMPLE_FIVE), after.dealerHand().cards());
+        assertEquals(List.of(Card.EXAMPLE_KING), after.remainingDeck().cards());
+    }
+
+    @Test
+    void dealCard_doesNotMutateInputState() {
+        Deck d = new Deck(List.of(Card.EXAMPLE_FIVE, Card.EXAMPLE_KING));
+        GameState before = new GameState(Hand.EMPTY, Hand.EMPTY, d);
+
+        GameLogic.dealCard(before, true);
+
+        assertEquals(0, before.playerHand().cards().size());
+        assertEquals(2, before.remainingDeck().cards().size());
+    }
+
     // ----- initialDeal -----
 
     @Test

@@ -1,7 +1,8 @@
 package blackjack.core;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 // A Deck is a List<Card>.
 // Interpretation: the remaining undealt cards, where the card at index 0 is
@@ -20,13 +21,12 @@ public record Deck(List<Card> cards) {
      * The imperative shell is responsible for shuffling before play.
      */
     public static Deck fullDeck() {
-        // Template: build all 52 (suit, rank) combinations, then freeze.
-        List<Card> all = new ArrayList<>(52);
-        for (Suit s : Suit.values()) {
-            for (int r = 1; r <= 13; r++) {
-                all.add(new Card(s, r));
-            }
-        }
+        // Template: flat-map every Suit over every rank [1..13], collect to
+        // an immutable list, wrap in a Deck.
+        List<Card> all = Arrays.stream(Suit.values())
+                .flatMap(s -> IntStream.rangeClosed(1, 13)
+                        .mapToObj(r -> new Card(s, r)))
+                .toList();
         return new Deck(all);
     }
 }

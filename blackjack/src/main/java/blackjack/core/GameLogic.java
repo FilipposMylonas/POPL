@@ -60,6 +60,7 @@ public final class GameLogic {
      * Returns true if the hand's value exceeds 21 (a bust).
      */
     public static boolean isBust(Hand hand) {
+        // Template: compute handValue, compare against the bust threshold (21).
         return handValue(hand) > 21;
     }
 
@@ -129,6 +130,8 @@ public final class GameLogic {
      * casino rule: the dealer hits on any total below 17 and stands otherwise.
      */
     public static boolean dealerShouldHit(Hand dealerHand) {
+        // Template: compute handValue, compare against the dealer-stand
+        // threshold (17): hit iff strictly below it.
         return handValue(dealerHand) < 17;
     }
 
